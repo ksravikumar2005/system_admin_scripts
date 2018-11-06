@@ -1,0 +1,96 @@
+mkdir certs
+cd certs
+openssl genrsa -des3 -out myCA.key 2048
+openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
+openssl genrsa -out node1.key 2048
+openssl req -new -key node1.key -out node1.csr
+cat node1.ext
+openssl x509 -req -in node1.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial -out node1.crt -days 1825 -sha256 -extfile node1.ext
+
+---------------------------------------------
+cat node1.ext
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = node2
+DNS.2 = node3
+
+-----------------------------------------
+ls -ltr
+
+
+-rw-------. 1 root root 1751 Nov  6 05:54 myCA.key
+-rw-------. 1 root root 1342 Nov  6 05:56 myCA.pem
+-rw-------. 1 root root 1675 Nov  6 05:56 node1.key
+-rw-------. 1 root root 1009 Nov  6 05:58 node1.csr
+-rw-------. 1 root root  211 Nov  6 05:59 node1.ext
+-rw-------. 1 root root   17 Nov  6 06:00 myCA.srl
+-rw-------. 1 root root 1342 Nov  6 06:00 node1.crt
+
+
+------------------------------------------
+
+openssl x509 -in node1.crt -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            d2:de:46:3e:f5:95:b0:b3
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ST=IN, L=Indianapolis, O=Dev Org, OU=Non Prod OU, CN=DevCASigner
+        Validity
+            Not Before: Nov  6 11:00:25 2018 GMT
+            Not After : Nov  5 11:00:25 2023 GMT
+        Subject: C=US, ST=Indianapolis, L=Indianapolis, O=Dev, OU=Non PROD, CN=node1
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:c3:88:ae:a2:5d:4c:e9:b2:b0:ee:9d:87:ae:e8:
+                    0f:66:f7:3b:61:cc:8e:61:e4:6f:c8:45:86:c6:63:
+                    8e:09:31:f1:34:b6:d7:40:47:fb:4f:b2:33:1c:0a:
+                    72:60:79:b3:f1:8b:40:4c:b2:63:88:32:e9:a9:86:
+                    59:d7:1b:e6:d3:fd:f8:06:4d:51:62:02:6f:45:cd:
+                    f1:25:9b:d1:7c:74:3d:69:59:73:7f:95:6e:c2:cf:
+                    1c:2a:d9:13:97:68:b2:22:20:c8:59:f4:93:9d:dd:
+                    e1:00:6a:f7:c9:0c:d2:85:ea:e9:71:d6:fd:d9:c0:
+                    3c:75:7c:85:5a:86:30:71:5f:f9:f8:12:14:1f:bb:
+                    b0:61:0c:b7:69:bc:7c:59:dc:2e:34:8f:a6:fd:cf:
+                    51:87:55:6f:71:84:b9:23:ff:77:e4:6c:1c:83:eb:
+                    27:b0:e4:48:10:8c:3b:3b:c0:2f:85:33:c2:b4:ff:
+                    aa:f8:97:fb:b2:e9:9f:e6:3d:a5:c4:43:68:0a:fa:
+                    cb:34:59:92:0f:e4:70:1e:99:9a:b6:95:32:1f:bf:
+                    1d:eb:b8:31:36:32:50:1b:11:66:b3:fa:38:5b:83:
+                    2a:11:53:32:8b:47:a1:74:f2:e3:f9:d2:d4:05:42:
+                    2d:a3:13:00:50:a0:4e:ac:46:08:f8:46:cd:90:3f:
+                    4c:93
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Authority Key Identifier:
+                keyid:3A:25:DD:8B:99:ED:A3:D3:EC:59:75:51:16:2E:3D:1F:A0:B2:4A:BB
+
+            X509v3 Basic Constraints:
+                CA:FALSE
+            X509v3 Key Usage:
+                Digital Signature, Non Repudiation, Key Encipherment, Data Encipherment
+            X509v3 Subject Alternative Name:
+                DNS:node2, DNS:node3
+    Signature Algorithm: sha256WithRSAEncryption
+         6f:f2:ec:87:1b:cd:5f:a9:9d:2f:a1:78:c6:2a:b1:ca:a5:47:
+         f4:3a:b7:46:65:73:1a:d5:15:ee:b0:28:b1:0a:87:2a:27:7b:
+         15:f0:21:07:18:d5:85:6b:d2:a9:56:1e:15:41:fb:72:ba:c4:
+         e5:5d:78:d8:2b:24:c2:b0:b1:14:b1:e7:4c:98:e7:80:5f:aa:
+         ee:b0:76:4f:80:8c:19:44:16:e6:42:37:9d:82:c1:17:93:b2:
+         67:fe:0a:26:a5:ee:89:a1:07:0d:44:1b:e7:a1:d0:85:da:ce:
+         42:46:66:b2:5d:0c:4e:65:9f:34:39:c3:2d:7a:41:88:83:1e:
+         0d:31:0d:60:c6:39:26:dc:e4:e9:7a:d0:0c:1c:c6:a0:ad:a7:
+         03:4e:a7:50:b8:49:4d:1f:e2:b8:78:57:1f:20:f1:f6:9e:f5:
+         57:c2:fb:95:38:f5:75:9e:5e:a9:2e:79:e8:47:da:ae:c5:fa:
+         22:b1:d9:d4:d3:89:95:6c:4e:7a:a5:d2:53:93:3b:79:38:bd:
+         48:46:18:bf:07:71:f4:58:1a:e3:6b:aa:17:69:fd:41:c9:b3:
+         c8:54:0f:b7:b0:50:09:a4:0e:76:32:79:23:30:8c:5f:f3:1b:
+         44:25:8c:02:3b:b7:3a:a3:fd:3f:09:05:91:0b:99:c8:6b:e8:
+         b0:1f:3d:3a
